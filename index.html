@@ -1,0 +1,1923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solace AI</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #070b17;
+      --bg2: #0d1324;
+      --card: rgba(255,255,255,0.06);
+      --card-strong: rgba(255,255,255,0.09);
+      --border: rgba(255,255,255,0.12);
+      --text: #f5f7ff;
+      --muted: #a7b2d3;
+      --cyan: #6ee7ff;
+      --purple: #8b5cf6;
+      --pink: #d946ef;
+      --green: #34d399;
+      --gold: #fbbf24;
+      --glow: 0 0 40px rgba(110, 231, 255, 0.18);
+      --shadow: 0 20px 60px rgba(0,0,0,0.35);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(139,92,246,0.18), transparent 28%),
+        radial-gradient(circle at top right, rgba(110,231,255,0.16), transparent 22%),
+        radial-gradient(circle at bottom center, rgba(217,70,239,0.10), transparent 24%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .stars,
+    .stars:before,
+    .stars:after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.8), transparent),
+        radial-gradient(2px 2px at 120px 200px, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1.5px 1.5px at 300px 150px, rgba(110,231,255,0.6), transparent),
+        radial-gradient(1.5px 1.5px at 500px 80px, rgba(255,255,255,0.7), transparent),
+        radial-gradient(2px 2px at 700px 220px, rgba(139,92,246,0.5), transparent),
+        radial-gradient(1.5px 1.5px at 900px 140px, rgba(255,255,255,0.6), transparent);
+      background-repeat: repeat;
+      background-size: 1000px 400px;
+      opacity: 0.45;
+    }
+
+    .stars:before {
+      transform: scale(1.2);
+      opacity: 0.25;
+    }
+
+    .stars:after {
+      transform: scale(1.4);
+      opacity: 0.12;
+    }
+
+    .container {
+      width: min(1180px, 92%);
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 22px 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background:
+        radial-gradient(circle at 30% 30%, #b8f7ff, transparent 20%),
+        linear-gradient(135deg, var(--cyan), var(--purple), var(--pink));
+      box-shadow: 0 0 22px rgba(110,231,255,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .logo:before {
+      content: "S";
+      font-weight: 700;
+      font-size: 22px;
+      color: white;
+      text-shadow: 0 0 10px rgba(255,255,255,0.35);
+    }
+
+    .brand-text h1 {
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .brand-text p {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+      letter-spacing: 0.4px;
+    }
+
+    nav {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      transition: 0.2s ease;
+    }
+
+    nav a:hover {
+      color: white;
+    }
+
+    .nav-btn {
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: white;
+      text-decoration: none;
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(10px);
+    }
+
+    .hero {
+      padding: 72px 0 48px;
+      display: block;
+    }
+
+    .hero-content {
+      max-width: 780px;
+      padding-right: 40px;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      padding: 8px 14px;
+      border: 1px solid rgba(110,231,255,0.2);
+      background: rgba(110,231,255,0.08);
+      color: var(--cyan);
+      border-radius: 999px;
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+
+    .hero h2 {
+      font-size: clamp(42px, 6vw, 72px);
+      line-height: 0.95;
+      letter-spacing: -2px;
+      max-width: 720px;
+    }
+
+    .hero h2 span {
+      background: linear-gradient(90deg, #fff, var(--cyan), #c084fc);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      margin-top: 22px;
+      max-width: 640px;
+      font-size: 18px;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .hero-actions {
+      margin-top: 28px;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .hero-proof {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-top: 26px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .hero-proof span {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hero-proof span:before {
+      content: "✦";
+      color: var(--cyan);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 20px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      transition: 0.2s ease;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: linear-gradient(90deg, var(--cyan), #9f7aea);
+      color: #09101d;
+      box-shadow: var(--glow);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      backdrop-filter: blur(12px);
+    }
+
+    .btn:hover,
+    .nav-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .section {
+      padding: 76px 0;
+    }
+
+    .section-title {
+      font-size: 34px;
+      margin-bottom: 12px;
+    }
+
+    .section-sub {
+      color: var(--muted);
+      max-width: 760px;
+      line-height: 1.7;
+      margin-bottom: 32px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      padding: 24px;
+      border-radius: 22px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(110,231,255,0.24);
+      box-shadow: 0 14px 34px rgba(0,0,0,0.26);
+    }
+
+    .card-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, rgba(110,231,255,0.22), rgba(139,92,246,0.22));
+      border: 1px solid rgba(255,255,255,0.12);
+      font-size: 18px;
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+      font-size: 20px;
+    }
+
+    .card p {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .metric {
+      padding: 24px;
+      border-radius: 22px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 34px;
+      margin-bottom: 8px;
+      background: linear-gradient(90deg, #fff, var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .metric span {
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .flow-card {
+      position: relative;
+      padding: 24px;
+      border-radius: 22px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+    }
+
+    .flow-step {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: #09101d;
+      background: linear-gradient(90deg, var(--cyan), #9f7aea);
+      margin-bottom: 14px;
+    }
+
+    .flow-card h3 {
+      margin-bottom: 10px;
+      font-size: 20px;
+    }
+
+    .flow-card p {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .demo-wrap {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .demo-copy,
+    .demo-mini {
+      border-radius: 24px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+
+    .demo-copy h3,
+    .demo-mini h3 {
+      margin-bottom: 12px;
+      font-size: 24px;
+    }
+
+    .demo-copy p,
+    .demo-mini p {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .demo-points {
+      margin-top: 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .demo-points div {
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #dfe8ff;
+    }
+
+    .mini-site {
+      margin-top: 18px;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(8,12,24,0.9);
+    }
+
+    .mini-site-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .mini-site-body {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .mini-site-card {
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .mini-chat-pulse {
+      margin-top: 18px;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(110,231,255,0.16), rgba(139,92,246,0.14));
+      border: 1px solid rgba(110,231,255,0.16);
+      animation: softPulse 2.4s ease-in-out infinite;
+    }
+
+    @keyframes softPulse {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(110,231,255,0.15);
+        transform: translateY(0);
+      }
+      50% {
+        box-shadow: 0 0 0 10px rgba(110,231,255,0.03);
+        transform: translateY(-1px);
+      }
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .price-card {
+      position: relative;
+      padding: 26px;
+      border-radius: 24px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow);
+      transition: transform 0.25s ease, border-color 0.25s ease;
+    }
+
+    .price-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(110,231,255,0.22);
+    }
+
+    .price-card.popular {
+      background: linear-gradient(180deg, rgba(110,231,255,0.12), rgba(255,255,255,0.06));
+      border-color: rgba(110,231,255,0.26);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35), 0 0 30px rgba(110,231,255,0.08);
+    }
+
+    .popular-badge {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #09101d;
+      background: linear-gradient(90deg, var(--cyan), #b794f4);
+    }
+
+    .price-name {
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+
+    .price-copy {
+      color: var(--muted);
+      min-height: 44px;
+      line-height: 1.6;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .price-amount {
+      font-size: 38px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .price-amount span {
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--muted);
+    }
+
+    .price-note {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+
+    .price-list {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 22px;
+      color: #dfe8ff;
+      font-size: 14px;
+    }
+
+    .price-list div {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .price-list div:before {
+      content: "✓";
+      color: var(--green);
+      font-weight: 700;
+      margin-top: 1px;
+    }
+
+    .price-cta {
+      width: 100%;
+    }
+
+    .pricing-footnote {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .social-proof {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .proof-box,
+    .quote-box {
+      padding: 24px;
+      border-radius: 22px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+    }
+
+    .logo-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .logo-pill {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #dfe8ff;
+      font-size: 13px;
+    }
+
+    .quote-box blockquote {
+      color: #e8eeff;
+      line-height: 1.8;
+      font-size: 16px;
+    }
+
+    .quote-box cite {
+      display: block;
+      margin-top: 16px;
+      color: var(--muted);
+      font-style: normal;
+      font-size: 14px;
+    }
+
+    .bottom-cta {
+      text-align: center;
+      padding: 34px;
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(110,231,255,0.10), rgba(255,255,255,0.05));
+      border: 1px solid rgba(110,231,255,0.16);
+      box-shadow: var(--shadow);
+    }
+
+    .bottom-cta h2 {
+      font-size: 36px;
+      margin-bottom: 12px;
+    }
+
+    .bottom-cta p {
+      max-width: 720px;
+      margin: 0 auto 24px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    footer {
+      padding: 0 0 44px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr 0.8fr;
+      gap: 18px;
+      padding: 26px;
+      border-radius: 24px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(14px);
+    }
+
+    .footer-grid h4 {
+      margin-bottom: 12px;
+      color: white;
+      font-size: 16px;
+    }
+
+    .footer-grid p,
+    .footer-grid a {
+      color: var(--muted);
+      line-height: 1.7;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .footer-links {
+      display: grid;
+      gap: 8px;
+    }
+
+    .sticky-cta {
+      position: fixed;
+      left: 24px;
+      bottom: 24px;
+      z-index: 9999;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(110,231,255,0.18);
+      background: rgba(8,12,24,0.82);
+      backdrop-filter: blur(14px);
+      color: white;
+      text-decoration: none;
+      box-shadow: 0 14px 34px rgba(0,0,0,0.28);
+      transition: transform 0.2s ease;
+    }
+
+    .sticky-cta:hover {
+      transform: translateY(-2px);
+    }
+
+    .sticky-cta span {
+      color: var(--cyan);
+    }
+
+    .chat-launcher {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      width: 68px;
+      height: 68px;
+      border: none;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--cyan), #9f7aea, var(--pink));
+      color: white;
+      font-size: 28px;
+      font-weight: 700;
+      cursor: pointer;
+      z-index: 10001;
+      box-shadow:
+        0 0 0 6px rgba(255,255,255,0.04),
+        0 18px 40px rgba(0,0,0,0.35),
+        0 0 30px rgba(110,231,255,0.22);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+      animation: launcherPulse 2.8s ease-in-out infinite;
+    }
+
+    @keyframes launcherPulse {
+      0%, 100% {
+        box-shadow:
+          0 0 0 6px rgba(255,255,255,0.04),
+          0 18px 40px rgba(0,0,0,0.35),
+          0 0 30px rgba(110,231,255,0.22);
+      }
+      50% {
+        box-shadow:
+          0 0 0 10px rgba(255,255,255,0.03),
+          0 18px 40px rgba(0,0,0,0.35),
+          0 0 36px rgba(110,231,255,0.26);
+      }
+    }
+
+    .chat-launcher:hover {
+      transform: translateY(-2px) scale(1.03);
+    }
+
+    .chat-widget {
+      position: fixed;
+      right: 24px;
+      bottom: 104px;
+      width: 430px;
+      height: 700px;
+      z-index: 10000;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+      backdrop-filter: blur(18px);
+      border-radius: 28px;
+      padding: 18px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(18px) scale(0.96);
+      transform-origin: bottom right;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .chat-widget.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    .chat-widget:before {
+      content: "";
+      position: absolute;
+      inset: -30%;
+      background: radial-gradient(circle, rgba(110,231,255,0.12), transparent 35%);
+      animation: pulse 6s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes pulse {
+      0% { transform: translate(-10%, -10%) rotate(0deg); }
+      100% { transform: translate(10%, 10%) rotate(360deg); }
+    }
+
+    .chat-panel {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      border-radius: 22px;
+      background: rgba(8,12,24,0.88);
+      border: 1px solid rgba(255,255,255,0.08);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-topbar {
+      display: flex;
+      gap: 8px;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #2f3a57;
+    }
+
+    .dot:nth-child(1) { background: #fb7185; }
+    .dot:nth-child(2) { background: #fbbf24; }
+    .dot:nth-child(3) { background: #34d399; }
+
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .chat-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background:
+        radial-gradient(circle at 30% 30%, #b8f7ff, transparent 20%),
+        linear-gradient(135deg, var(--cyan), var(--purple), var(--pink));
+      box-shadow: 0 0 18px rgba(110,231,255,0.22);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: white;
+    }
+
+    .chat-header h3 {
+      font-size: 16px;
+    }
+
+    .chat-header p {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    #chatbox {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px 18px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scroll-behavior: smooth;
+    }
+
+    .message {
+      max-width: 88%;
+      padding: 14px 16px;
+      border-radius: 18px;
+      line-height: 1.6;
+      font-size: 14px;
+      white-space: pre-wrap;
+      animation: fadeUp 0.2s ease;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .bot {
+      align-self: flex-start;
+      background: linear-gradient(135deg, rgba(110,231,255,0.14), rgba(139,92,246,0.12));
+      border: 1px solid rgba(110,231,255,0.14);
+      color: #f3f7ff;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+    }
+
+    .user {
+      align-self: flex-end;
+      background: linear-gradient(90deg, var(--cyan), #9f7aea);
+      color: #09101d;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+    }
+
+    .typing {
+      align-self: flex-start;
+      display: flex;
+      gap: 6px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(110,231,255,0.14), rgba(139,92,246,0.12));
+      border: 1px solid rgba(110,231,255,0.14);
+      width: fit-content;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+    }
+
+    .typing span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #d7e6ff;
+      opacity: 0.35;
+      animation: bounce 1.2s infinite;
+    }
+
+    .typing span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes bounce {
+      0%, 80%, 100% {
+        transform: translateY(0);
+        opacity: 0.35;
+      }
+      40% {
+        transform: translateY(-4px);
+        opacity: 1;
+      }
+    }
+
+    .quick-actions {
+      display: flex;
+      gap: 10px;
+      padding: 0 18px 16px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      flex-wrap: nowrap;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      scroll-snap-type: x proximity;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .quick-actions::-webkit-scrollbar {
+      display: none;
+    }
+
+    .quick-btn {
+      flex: 0 0 auto;
+      white-space: nowrap;
+      scroll-snap-align: start;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.05);
+      color: #dfe8ff;
+      border-radius: 999px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: 0.2s ease;
+    }
+
+    .quick-btn:hover {
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.08);
+    }
+
+    .reset-wrap {
+      padding: 0 18px 14px;
+    }
+
+    .reset-btn {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+      color: #b8c4e8;
+      border-radius: 14px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: 0.2s ease;
+    }
+
+    .reset-btn:hover {
+      background: rgba(255,255,255,0.07);
+      color: white;
+    }
+
+    .chat-input-wrap {
+      display: flex;
+      gap: 10px;
+      padding: 16px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.02);
+    }
+
+    #userInput {
+      flex: 1;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.06);
+      color: white;
+      border-radius: 14px;
+      padding: 14px 16px;
+      outline: none;
+      font-size: 14px;
+    }
+
+    #userInput::placeholder {
+      color: #95a4cf;
+    }
+
+    #sendBtn {
+      border: none;
+      border-radius: 14px;
+      min-width: 54px;
+      background: linear-gradient(90deg, var(--cyan), #9f7aea);
+      color: #09101d;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: var(--glow);
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 1100px) {
+      .pricing-grid,
+      .grid-4,
+      .metrics,
+      .flow,
+      .social-proof,
+      .demo-wrap {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 1000px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      nav a:not(.nav-btn) {
+        display: none;
+      }
+    }
+
+    @media (max-width: 800px) {
+      .pricing-grid,
+      .grid-4,
+      .metrics,
+      .flow,
+      .social-proof,
+      .demo-wrap,
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .sticky-cta {
+        left: 12px;
+        bottom: 12px;
+        padding: 12px 14px;
+        font-size: 13px;
+      }
+
+      .chat-launcher {
+        right: 12px;
+        bottom: 12px;
+        width: 62px;
+        height: 62px;
+      }
+
+      .chat-widget {
+        right: 12px;
+        left: 12px;
+        bottom: 86px;
+        width: auto;
+        height: 76vh;
+      }
+
+      .hero-content {
+        padding-right: 0;
+      }
+
+      .hero h2 {
+        font-size: clamp(38px, 10vw, 58px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars"></div>
+
+  <a href="javascript:void(0)" class="sticky-cta" onclick="openChat()">
+    <span>✦</span> Try Solace
+  </a>
+
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo"></div>
+        <div class="brand-text">
+          <h1>Solace AI</h1>
+          <p>Intelligent website conversations</p>
+        </div>
+      </div>
+
+      <nav>
+        <a href="#features">Features</a>
+        <a href="#demo">Live demo</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#contact">Contact</a>
+        <a href="javascript:void(0)" class="nav-btn" onclick="openChat()">Open Chat</a>
+      </nav>
+    </header>
+
+    <section class="hero reveal">
+      <div class="hero-content">
+        <div class="eyebrow">AI • Automation • Lead Capture</div>
+        <h2>Give your website a <span>smarter presence</span>.</h2>
+        <p>
+          Solace helps businesses guide visitors, answer questions, capture qualified leads,
+          and create a smoother customer experience with a premium AI-powered front end.
+        </p>
+
+        <div class="hero-actions">
+          <a href="javascript:void(0)" class="btn btn-primary" onclick="openChat()">Start Conversation</a>
+          <a href="#pricing" class="btn btn-secondary">View Pricing</a>
+        </div>
+
+        <div class="hero-proof">
+          <span>24/7 visitor engagement</span>
+          <span>Lead capture built in</span>
+          <span>Free setup on yearly plans</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal" id="features">
+      <h2 class="section-title">Built for modern business websites</h2>
+      <p class="section-sub">
+        Solace is designed to feel polished, intelligent, and useful from the first interaction.
+        It helps visitors get where they need to go faster while giving your team better incoming leads.
+      </p>
+
+      <div class="grid">
+        <div class="card">
+          <div class="card-icon">✦</div>
+          <h3>Premium first impression</h3>
+          <p>
+            Create a more refined, responsive experience for visitors with a conversational layer that feels modern and intentional.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">☄</div>
+          <h3>Smarter lead capture</h3>
+          <p>
+            Turn casual website visits into qualified opportunities by guiding people through clear, structured conversations.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">◉</div>
+          <h3>Team-ready handoff</h3>
+          <p>
+            Collect useful context before the handoff so your team already knows what the visitor needs before reaching out.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal">
+      <h2 class="section-title">Results businesses care about</h2>
+      <p class="section-sub">
+        Solace is built to improve responsiveness, reduce missed opportunities, and create a better path from first visit to real inquiry.
+      </p>
+
+      <div class="metrics">
+        <div class="metric">
+          <strong>2–4x</strong>
+          <span>More qualified leads captured from website visitors who would otherwise leave without taking action.</span>
+        </div>
+        <div class="metric">
+          <strong>24/7</strong>
+          <span>Instant replies for visitors, even when your team is offline or busy with existing customers.</span>
+        </div>
+        <div class="metric">
+          <strong>Faster</strong>
+          <span>Cleaner handoff to your team with context, intent, and contact details already collected.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal" id="demo">
+      <h2 class="section-title">Try Solace on a real website feel</h2>
+      <p class="section-sub">
+        Instead of just reading about it, experience the kind of polished interaction Solace can create for your visitors.
+      </p>
+
+      <div class="demo-wrap">
+        <div class="demo-copy">
+          <h3>Live demo feel</h3>
+          <p>
+            Solace works directly on your website as a smart front end that can answer questions,
+            guide visitors toward pricing or support, and help your business capture better leads.
+          </p>
+
+          <div class="demo-points">
+            <div>Visitors get instant help instead of searching through pages.</div>
+            <div>Lead capture happens naturally inside the conversation.</div>
+            <div>Your team receives cleaner, more useful inquiries.</div>
+          </div>
+
+          <div class="hero-actions" style="margin-top:22px;">
+            <a href="javascript:void(0)" class="btn btn-primary" onclick="openChat()">Try Solace Now</a>
+            <a href="#pricing" class="btn btn-secondary">See Plans</a>
+          </div>
+        </div>
+
+        <div class="demo-mini">
+          <h3>Mini site preview</h3>
+          <p>Think of this as a simple example of how Solace fits into a real business website experience.</p>
+
+          <div class="mini-site">
+            <div class="mini-site-top">
+              <strong style="font-size:14px;">Business Website</strong>
+              <span style="color:#a7b2d3;font-size:12px;">Live visitor experience</span>
+            </div>
+            <div class="mini-site-body">
+              <div class="mini-site-card">A visitor lands on your site and wants pricing, support, or more information.</div>
+              <div class="mini-site-card">Instead of leaving, they get an immediate, polished conversation with clear next steps.</div>
+              <div class="mini-site-card">Your team gets a cleaner lead with useful context attached.</div>
+            </div>
+          </div>
+
+          <div class="mini-chat-pulse">
+            <span style="font-size:18px;">✦</span>
+            <div>
+              <strong style="display:block;font-size:14px;">Try it now</strong>
+              <span style="font-size:13px;color:#cfd8f5;">Open the chat and see the experience live.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal" id="how">
+      <h2 class="section-title">How Solace fits into your site</h2>
+      <p class="section-sub">
+        Solace lives on your website as an intelligent assistant that can answer common questions,
+        direct visitors, collect contact information, and support your sales or service workflow.
+      </p>
+
+      <div class="flow">
+        <div class="flow-card">
+          <div class="flow-step">1</div>
+          <h3>Engage</h3>
+          <p>
+            Visitors get immediate help instead of searching through pages or waiting for someone to respond.
+          </p>
+        </div>
+
+        <div class="flow-card">
+          <div class="flow-step">2</div>
+          <h3>Guide</h3>
+          <p>
+            Solace can move people toward pricing, support, sales, or the exact information they need.
+          </p>
+        </div>
+
+        <div class="flow-card">
+          <div class="flow-step">3</div>
+          <h3>Convert</h3>
+          <p>
+            Qualified contact details and conversation context can be passed to your team for faster follow-up.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal">
+      <h2 class="section-title">Use cases across different businesses</h2>
+      <p class="section-sub">
+        Solace is flexible enough to support different industries while still creating a smooth, premium customer experience.
+      </p>
+
+      <div class="grid-4">
+        <div class="card">
+          <div class="card-icon">⌁</div>
+          <h3>SaaS</h3>
+          <p>Guide trial users, answer product questions, and move visitors toward demos or signups faster.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">⌂</div>
+          <h3>Local businesses</h3>
+          <p>Capture inquiries, answer service questions, and help visitors reach the right next step quickly.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">◎</div>
+          <h3>Agencies</h3>
+          <p>Qualify inbound leads, collect project details, and make handoff to your team more efficient.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">◌</div>
+          <h3>E-commerce</h3>
+          <p>Support shoppers in real time, answer common questions, and reduce drop-off before purchase.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal" id="pricing">
+      <h2 class="section-title">Simple pricing for growing businesses</h2>
+      <p class="section-sub">
+        Designed to stay clear for smaller businesses while leaving room for tailored solutions as your needs grow.
+      </p>
+
+      <div class="pricing-grid">
+        <div class="price-card">
+          <div class="price-name">Starter</div>
+          <div class="price-copy">A simple entry point for smaller businesses getting started with website conversations.</div>
+          <div class="price-amount">$29 <span>/ month</span></div>
+          <div class="price-note">Good for lighter usage</div>
+          <div class="price-list">
+            <div>Up to 500 conversations</div>
+            <div>Lead capture included</div>
+            <div>Basic support</div>
+            <div>Clean website integration</div>
+          </div>
+          <button class="btn btn-secondary price-cta" onclick="openChat()">Start with Starter</button>
+        </div>
+
+        <div class="price-card popular">
+          <div class="popular-badge">Most Popular</div>
+          <div class="price-name">Growth</div>
+          <div class="price-copy">Built for businesses ready to turn more website traffic into structured opportunities.</div>
+          <div class="price-amount">$79 <span>/ month</span></div>
+          <div class="price-note">Best balance of value and scale</div>
+          <div class="price-list">
+            <div>Up to 2,000 conversations</div>
+            <div>Smarter lead capture flow</div>
+            <div>Priority responses</div>
+            <div>Best fit for growing teams</div>
+          </div>
+          <button class="btn btn-primary price-cta" onclick="openChat()">Choose Growth</button>
+        </div>
+
+        <div class="price-card">
+          <div class="price-name">Pro</div>
+          <div class="price-copy">For serious businesses that need higher volume, stronger support, and more flexibility.</div>
+          <div class="price-amount">$149 <span>/ month</span></div>
+          <div class="price-note">For heavier usage and stronger support</div>
+          <div class="price-list">
+            <div>Up to 6,000 conversations</div>
+            <div>Priority support</div>
+            <div>More advanced lead flow</div>
+            <div>Better fit for busy websites</div>
+          </div>
+          <button class="btn btn-secondary price-cta" onclick="openChat()">Go Pro</button>
+        </div>
+
+        <div class="price-card">
+          <div class="price-name">Custom</div>
+          <div class="price-copy">Tailored for growing teams, agencies, and enterprise-style use cases with larger needs.</div>
+          <div class="price-amount">Custom</div>
+          <div class="price-note">Tailored pricing and scope</div>
+          <div class="price-list">
+            <div>High conversation volume</div>
+            <div>Tailored AI behavior</div>
+            <div>Advanced lead capture</div>
+            <div>Enterprise / custom fit</div>
+          </div>
+          <button class="btn btn-secondary price-cta" onclick="openChat()">Talk to Us</button>
+        </div>
+      </div>
+
+      <p class="pricing-footnote">
+        Free setup on yearly plans. Custom and enterprise-style engagements are scoped separately based on volume, goals, and support needs.
+      </p>
+    </section>
+
+    <section class="section reveal">
+      <h2 class="section-title">Built to feel credible from day one</h2>
+      <p class="section-sub">
+        Strong positioning, a polished experience, and clear value all help visitors trust what they’re seeing faster.
+      </p>
+
+      <div class="social-proof">
+        <div class="proof-box">
+          <h3 style="margin-bottom:10px;">Used by growing businesses</h3>
+          <p style="color:var(--muted); line-height:1.7;">
+            Solace is designed for businesses that want a more modern website experience and a stronger way to capture opportunity.
+          </p>
+
+          <div class="logo-row">
+            <div class="logo-pill">Growing teams</div>
+            <div class="logo-pill">Agencies</div>
+            <div class="logo-pill">Service businesses</div>
+            <div class="logo-pill">SaaS brands</div>
+            <div class="logo-pill">E-commerce</div>
+            <div class="logo-pill">Custom builds</div>
+          </div>
+        </div>
+
+        <div class="quote-box">
+          <blockquote>
+            “The goal with Solace is simple: give businesses a cleaner, smarter, more responsive way to interact with visitors the moment they land on the site.”
+          </blockquote>
+          <cite>Solace positioning statement</cite>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal">
+      <div class="bottom-cta">
+        <h2>Ready to give your website a smarter presence?</h2>
+        <p>
+          Start with a live conversation, explore the pricing, or talk with us about a more tailored setup for your business.
+        </p>
+        <div class="hero-actions" style="justify-content:center; margin-top:0;">
+          <a href="javascript:void(0)" class="btn btn-primary" onclick="openChat()">Start Conversation</a>
+          <a href="#pricing" class="btn btn-secondary">See Pricing</a>
+        </div>
+      </div>
+    </section>
+
+    <footer id="contact">
+      <div class="footer-grid">
+        <div>
+          <h4>Solace AI</h4>
+          <p>
+            Intelligent website conversations designed to help businesses respond faster,
+            guide visitors more effectively, and capture better incoming opportunities.
+          </p>
+        </div>
+
+        <div>
+          <h4>Explore</h4>
+          <div class="footer-links">
+            <a href="#features">Features</a>
+            <a href="#demo">Live demo</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#how">How it works</a>
+          </div>
+        </div>
+
+        <div>
+          <h4>Contact</h4>
+          <div class="footer-links">
+            <a href="javascript:void(0)" onclick="openChat()">Talk to our team</a>
+            <a href="mailto:hello@solaceai.ca">hello@solaceai.ca</a>
+            <a href="javascript:void(0)" onclick="openChat()">Start a conversation</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <button class="chat-launcher" id="chatLauncher" onclick="toggleChat()">✦</button>
+
+  <div class="chat-widget" id="chat-widget">
+    <div class="chat-panel">
+      <div class="chat-topbar">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+
+      <div class="chat-header">
+        <div class="chat-avatar">S</div>
+        <div>
+          <h3>Solace AI</h3>
+          <p id="statusText">Online now</p>
+        </div>
+      </div>
+
+      <div id="chatbox"></div>
+
+      <div class="quick-actions" id="quickActions">
+        <button class="quick-btn" onclick="sendQuickMessage('pricing')">Pricing</button>
+        <button class="quick-btn" onclick="sendQuickMessage('how it works')">How it works</button>
+        <button class="quick-btn" onclick="sendQuickMessage('custom plan')">Custom plan</button>
+      </div>
+
+      <div class="reset-wrap">
+        <button class="reset-btn" onclick="resetChat()">Start new conversation</button>
+      </div>
+
+      <div class="chat-input-wrap">
+        <input id="userInput" type="text" placeholder="Ask a question or start a conversation..." />
+        <button id="sendBtn" onclick="sendMessage()">➜</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const chatbox = document.getElementById("chatbox");
+    const userInput = document.getElementById("userInput");
+    const chatWidget = document.getElementById("chat-widget");
+    const sendBtn = document.getElementById("sendBtn");
+    const quickActions = document.getElementById("quickActions");
+    const statusText = document.getElementById("statusText");
+
+    const storageKey = "solace-chat-history-v4";
+    const quickKey = "solace-chat-quick-actions-v4";
+    const welcomeKey = "solace-chat-welcomed-v4";
+
+    let sessionId = localStorage.getItem("solace-chat-session-id");
+    if (!sessionId) {
+      sessionId = "solace-site-" + Date.now();
+      localStorage.setItem("solace-chat-session-id", sessionId);
+    }
+
+    let hasStartedChat = localStorage.getItem(welcomeKey) === "true";
+    let isSending = false;
+    let hasHydratedChat = false;
+
+    const defaultQuickActions = [
+      { label: "Pricing", value: "pricing" },
+      { label: "How it works", value: "how it works" },
+      { label: "Custom plan", value: "custom plan" }
+    ];
+
+    function newSession() {
+      sessionId = "solace-site-" + Date.now();
+      localStorage.setItem("solace-chat-session-id", sessionId);
+    }
+
+    function saveMessages() {
+      localStorage.setItem(storageKey, chatbox.innerHTML);
+    }
+
+    function loadMessages() {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        chatbox.innerHTML = saved;
+        chatbox.scrollTop = chatbox.scrollHeight;
+      }
+    }
+
+    function hydrateChatState() {
+      if (hasHydratedChat) return;
+      loadMessages();
+      loadQuickActions();
+      hasHydratedChat = true;
+    }
+
+    function updateStatus(text) {
+      statusText.textContent = text;
+    }
+
+    function getQuickButtons() {
+      return document.querySelectorAll(".quick-btn");
+    }
+
+    function renderQuickActions(actions) {
+      quickActions.innerHTML = "";
+
+      actions.forEach((action) => {
+        const btn = document.createElement("button");
+        btn.className = "quick-btn";
+        btn.textContent = action.label;
+        btn.onclick = () => sendQuickMessage(action.value);
+        quickActions.appendChild(btn);
+      });
+
+      localStorage.setItem(quickKey, JSON.stringify(actions));
+
+      if (isSending) {
+        getQuickButtons().forEach((btn) => {
+          btn.disabled = true;
+          btn.style.opacity = "0.6";
+          btn.style.cursor = "not-allowed";
+        });
+      }
+    }
+
+    function loadQuickActions() {
+      const saved = localStorage.getItem(quickKey);
+
+      if (!saved) {
+        renderQuickActions(defaultQuickActions);
+        return;
+      }
+
+      try {
+        renderQuickActions(JSON.parse(saved));
+      } catch {
+        renderQuickActions(defaultQuickActions);
+      }
+    }
+
+    function setContextQuickActions(lastText = "") {
+      const text = (lastText || "").toLowerCase();
+
+      if (text.includes("starter") && text.includes("growth") && text.includes("pro")) {
+        renderQuickActions([
+          { label: "Growth plan", value: "growth plan" },
+          { label: "Yearly pricing", value: "yearly pricing" },
+          { label: "Custom plan", value: "custom plan" }
+        ]);
+        return;
+      }
+
+      if (
+        text.includes("would you like to continue") ||
+        text.includes("where we left off")
+      ) {
+        renderQuickActions([
+          { label: "Continue", value: "continue" },
+          { label: "More questions", value: "i have more" },
+          { label: "Talk to our team", value: "contact team" }
+        ]);
+        return;
+      }
+
+      if (
+        text.includes("what type of business") ||
+        text.includes("monthly visitors") ||
+        text.includes("move forward") ||
+        text.includes("name of your company") ||
+        text.includes("contact information")
+      ) {
+        renderQuickActions([
+          { label: "Continue", value: "continue" },
+          { label: "Pricing", value: "pricing" },
+          { label: "Custom plan", value: "custom plan" }
+        ]);
+        return;
+      }
+
+      if (
+        text.includes("what else can i help you with") ||
+        text.includes("what would you like to know") ||
+        text.includes("what would you like to explore")
+      ) {
+        renderQuickActions(defaultQuickActions);
+        return;
+      }
+
+      renderQuickActions(defaultQuickActions);
+    }
+
+    function addMessage(text, sender) {
+      const message = document.createElement("div");
+      message.className = `message ${sender}`;
+      message.textContent = text;
+      chatbox.appendChild(message);
+      chatbox.scrollTop = chatbox.scrollHeight;
+      saveMessages();
+
+      if (sender === "bot") {
+        setContextQuickActions(text);
+      }
+
+      return message;
+    }
+
+    function addTyping() {
+      removeTyping();
+      const typing = document.createElement("div");
+      typing.className = "typing";
+      typing.id = "typing-indicator";
+      typing.innerHTML = "<span></span><span></span><span></span>";
+      chatbox.appendChild(typing);
+      chatbox.scrollTop = chatbox.scrollHeight;
+      updateStatus("Thinking...");
+    }
+
+    function removeTyping() {
+      const typing = document.getElementById("typing-indicator");
+      if (typing) typing.remove();
+      updateStatus("Online now");
+    }
+
+    function setSendingState(disabled) {
+      userInput.disabled = disabled;
+      sendBtn.disabled = disabled;
+
+      sendBtn.style.opacity = disabled ? "0.6" : "1";
+      sendBtn.style.cursor = disabled ? "not-allowed" : "pointer";
+
+      getQuickButtons().forEach((btn) => {
+        btn.disabled = disabled;
+        btn.style.opacity = disabled ? "0.6" : "1";
+        btn.style.cursor = disabled ? "not-allowed" : "pointer";
+      });
+    }
+
+    function wait(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    async function playWelcomeFlow() {
+      if (hasStartedChat || chatbox.children.length > 0) return;
+
+      addTyping();
+      await wait(650);
+      removeTyping();
+      addMessage(
+        "Welcome — I’m Solace. I’m here to help with pricing, answer questions, and connect you with our team.",
+        "bot"
+      );
+
+      await wait(250);
+      addTyping();
+      await wait(500);
+      removeTyping();
+      addMessage(
+        "You can ask about pricing, yearly plans, custom packages, how it works, use cases, or anything else you’d like to explore.",
+        "bot"
+      );
+
+      hasStartedChat = true;
+      localStorage.setItem(welcomeKey, "true");
+      renderQuickActions(defaultQuickActions);
+    }
+
+    async function openChat() {
+      hydrateChatState();
+      chatWidget.classList.add("open");
+
+      if (!hasStartedChat && chatbox.children.length === 0) {
+        await playWelcomeFlow();
+      }
+
+      setTimeout(() => userInput.focus(), 200);
+    }
+
+    function closeChat() {
+      chatWidget.classList.remove("open");
+    }
+
+    function toggleChat() {
+      if (chatWidget.classList.contains("open")) {
+        closeChat();
+      } else {
+        openChat();
+      }
+    }
+
+    async function typeBotMessage(text) {
+      const message = document.createElement("div");
+      message.className = "message bot";
+      message.textContent = "";
+      chatbox.appendChild(message);
+      chatbox.scrollTop = chatbox.scrollHeight;
+
+      const speed = text.length > 140 ? 10 : 18;
+
+      for (let i = 0; i < text.length; i++) {
+        message.textContent += text[i];
+        chatbox.scrollTop = chatbox.scrollHeight;
+        await wait(speed);
+      }
+
+      saveMessages();
+      setContextQuickActions(text);
+    }
+
+    async function showSingleBotReply(text, index = 0) {
+      addTyping();
+
+      const thinkDelay = index === 0 ? 700 : 500;
+      await wait(thinkDelay);
+
+      removeTyping();
+
+      const shouldTypeOut =
+        text.length <= 180 &&
+        !text.includes("•") &&
+        Math.random() < 0.45;
+
+      if (shouldTypeOut) {
+        await typeBotMessage(text);
+      } else {
+        addMessage(text, "bot");
+      }
+    }
+
+    async function showBotReplies(data) {
+      if (Array.isArray(data.replies)) {
+        for (let i = 0; i < data.replies.length; i++) {
+          await showSingleBotReply(data.replies[i], i);
+
+          if (i < data.replies.length - 1) {
+            await wait(250);
+          }
+        }
+      } else {
+        await showSingleBotReply(data.reply || "Sorry, something went wrong.");
+      }
+    }
+
+    async function sendMessage(customMessage) {
+      const text = customMessage || userInput.value.trim();
+      if (!text || isSending) return;
+
+      hydrateChatState();
+
+      isSending = true;
+      setSendingState(true);
+      updateStatus("Thinking...");
+
+      if (!chatWidget.classList.contains("open")) {
+        chatWidget.classList.add("open");
+      }
+
+      addMessage(text, "user");
+      userInput.value = "";
+
+      if (!hasStartedChat) {
+        hasStartedChat = true;
+        localStorage.setItem(welcomeKey, "true");
+      }
+
+      try {
+  const res = await fetch("https://YOUR-BACKEND-URL.com/chat", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      message: text,
+      session: sessionId
+    })
+  });
+
+        const data = await res.json();
+        await showBotReplies(data);
+      } catch (error) {
+        removeTyping();
+        await showSingleBotReply("I ran into a small issue just now. Please try again.");
+      } finally {
+        isSending = false;
+        setSendingState(false);
+        updateStatus("Online now");
+        userInput.focus();
+      }
+    }
+
+    function sendQuickMessage(text) {
+      if (isSending) return;
+      openChat().then(() => sendMessage(text));
+    }
+
+    function resetChat() {
+      if (isSending) return;
+
+      localStorage.removeItem(storageKey);
+      localStorage.removeItem(quickKey);
+      localStorage.removeItem(welcomeKey);
+
+      chatbox.innerHTML = "";
+      hasStartedChat = false;
+      hasHydratedChat = true;
+      newSession();
+      renderQuickActions(defaultQuickActions);
+      updateStatus("Online now");
+
+      openChat();
+    }
+
+    userInput.addEventListener("keypress", function (e) {
+      if (e.key === "Enter") {
+        sendMessage();
+      }
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
+
+    hydrateChatState();
+  </script>
+</body>
+</html>

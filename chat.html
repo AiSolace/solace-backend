@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Solace AI</title>
+  <style>
+    body{
+      margin:0;
+      font-family:Arial;
+      background:#2e2e2e;
+    }
+
+    .chat-toggle{
+      position:fixed;
+      bottom:20px;
+      right:20px;
+      width:52px;
+      height:52px;
+      border-radius:50%;
+      background:white;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      box-shadow:0 5px 20px rgba(0,0,0,.3);
+      transition:transform .25s;
+    }
+
+    .chat-toggle.open{
+      transform:rotate(180deg);
+    }
+
+    .chat{
+      position:fixed;
+      bottom:90px;
+      right:20px;
+      width:440px;
+      height:640px;
+      background:#2e2e2e;
+      border-radius:16px;
+      display:flex;
+      flex-direction:column;
+      box-shadow:0 10px 30px rgba(0,0,0,.4);
+      overflow:hidden;
+    }
+
+    .header{
+      background:#3a3a3a;
+      color:white;
+      padding:16px;
+      font-weight:bold;
+    }
+
+    .messages{
+      flex:1;
+      padding:14px;
+      overflow-y:auto;
+      font-size:12px;
+    }
+
+    .message{
+      display:flex;
+      margin-bottom:16px;
+    }
+
+    .avatar{
+      width:30px;
+      height:30px;
+      border-radius:50%;
+      background:#555;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:white;
+      font-size:12px;
+      margin-right:8px;
+    }
+
+    .content{
+      display:flex;
+      flex-direction:column;
+    }
+
+    .bubble{
+      max-width:260px;
+      padding:10px 14px;
+      border-radius:14px;
+      line-height:1.4;
+      background:#3f3f3f;
+      color:white;
+    }
+
+    .user{
+      justify-content:flex-end;
+    }
+
+    .user .bubble{
+      background:white;
+      color:black;
+    }
+
+    .meta{
+      font-size:10px;
+      opacity:.6;
+      margin-top:4px;
+    }
+
+    .quick{
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+      padding:10px;
+    }
+
+    .quick button{
+      background:#4a4a4a;
+      border:none;
+      color:white;
+      padding:6px 10px;
+      border-radius:12px;
+      font-size:11px;
+      cursor:pointer;
+    }
+
+    .input{
+      display:flex;
+      align-items:center;
+      padding:10px;
+      background:#3a3a3a;
+      gap:6px;
+    }
+
+    input{
+      flex:1;
+      padding:10px;
+      border-radius:8px;
+      border:none;
+      outline:none;
+    }
+
+    .send{
+      width:36px;
+      height:36px;
+      border-radius:50%;
+      background:#555;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      transition:.2s;
+    }
+
+    .send svg{
+      width:16px;
+      height:16px;
+      fill:white;
+    }
+
+    .send.active{
+      background:white;
+    }
+
+    .send.active svg{
+      fill:black;
+    }
+
+    .footer{
+      text-align:center;
+      font-size:10px;
+      opacity:.6;
+      padding:6px;
+      color:white;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="chat-toggle" id="toggle" onclick="toggleChat()">
+    <svg viewBox="0 0 24 24" width="18">
+      <path d="M7 10l5 5 5-5z"/>
+    </svg>
+  </div>
+
+  <div class="chat" id="chat">
+    <div class="header">Solace AI</div>
+
+    <div class="messages" id="messages"></div>
+
+    <div class="quick">
+      <button onclick="quick('pricing')">📦 Pricing</button>
+      <button onclick="quick('how it works')">⚡ How it works</button>
+      <button onclick="quick('contact team')">📞 Contact team</button>
+    </div>
+
+    <div class="input">
+      <input id="text" placeholder="Type a message">
+      <div class="send" id="sendBtn" onclick="send()">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2L5 9h4v7h6V9h4z"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="footer">
+      Powered by Solace AI
+    </div>
+  </div>
+
+  <script>
+    const messages=document.getElementById("messages")
+    const input=document.getElementById("text")
+    const sendBtn=document.getElementById("sendBtn")
+    const toggle=document.getElementById("toggle")
+    const chat=document.getElementById("chat")
+
+    let chatOpen=true
+    let session="web-session"
+
+    function toggleChat(){
+      chatOpen=!chatOpen
+      chat.style.display=chatOpen?"flex":"none"
+      toggle.classList.toggle("open")
+    }
+
+    function addUser(text){
+      const row=document.createElement("div")
+      row.className="message user"
+
+      const bubble=document.createElement("div")
+      bubble.className="bubble"
+      bubble.textContent=text
+
+      row.appendChild(bubble)
+      messages.appendChild(row)
+      messages.scrollTop=messages.scrollHeight
+    }
+
+    function botMessage(text){
+      const row=document.createElement("div")
+      row.className="message bot"
+
+      const avatar=document.createElement("div")
+      avatar.className="avatar"
+      avatar.textContent="S"
+
+      const content=document.createElement("div")
+      content.className="content"
+
+      const bubble=document.createElement("div")
+      bubble.className="bubble"
+
+      const meta=document.createElement("div")
+      meta.className="meta"
+
+      const time=new Date().toLocaleTimeString([],{
+        hour:"2-digit",
+        minute:"2-digit"
+      })
+
+      meta.textContent=`Solace • AI Assistant • ${time}`
+
+      content.appendChild(bubble)
+      content.appendChild(meta)
+
+      row.appendChild(avatar)
+      row.appendChild(content)
+
+      messages.appendChild(row)
+
+      stream(text,bubble)
+    }
+
+    function stream(text,bubble){
+      let i=0
+
+      function type(){
+        if(i<text.length){
+          bubble.textContent+=text.charAt(i)
+          i++
+          messages.scrollTop=messages.scrollHeight
+          setTimeout(type,14)
+        }
+      }
+
+      type()
+    }
+
+    function quick(text){
+      input.value=text
+      send()
+    }
+
+    async function send(){
+      const text=input.value.trim()
+
+      if(!text) return
+
+      addUser(text)
+      input.value=""
+      sendBtn.classList.remove("active")
+
+      try{
+        const res=await fetch("/chat",{
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({
+            message:text,
+            session:session
+          })
+        })
+
+        const data=await res.json()
+        botMessage(data.reply)
+      }catch(err){
+        botMessage("Error connecting to server.")
+      }
+    }
+
+    input.addEventListener("input",()=>{
+      if(input.value.length>0){
+        sendBtn.classList.add("active")
+      }else{
+        sendBtn.classList.remove("active")
+      }
+    })
+
+    input.addEventListener("keydown",e=>{
+      if(e.key==="Enter") send()
+    })
+
+    setTimeout(()=>{
+     botMessage("Welcome — I'm Solace, your virtual assistant. I'm here to help with pricing, answer questions, and connect you with our team.")
+    },1200)
+  </script>
+
+</body>
+</html>

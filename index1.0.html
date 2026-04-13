@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solace AI</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #070b17;
+      --bg2: #0d1324;
+      --card: rgba(255,255,255,0.06);
+      --border: rgba(255,255,255,0.12);
+      --text: #f5f7ff;
+      --muted: #a7b2d3;
+      --cyan: #6ee7ff;
+      --purple: #8b5cf6;
+      --pink: #d946ef;
+      --glow: 0 0 40px rgba(110, 231, 255, 0.18);
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(139,92,246,0.18), transparent 28%),
+        radial-gradient(circle at top right, rgba(110,231,255,0.16), transparent 22%),
+        radial-gradient(circle at bottom center, rgba(217,70,239,0.10), transparent 24%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .stars,
+    .stars:before,
+    .stars:after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.8), transparent),
+        radial-gradient(2px 2px at 120px 200px, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1.5px 1.5px at 300px 150px, rgba(110,231,255,0.6), transparent),
+        radial-gradient(1.5px 1.5px at 500px 80px, rgba(255,255,255,0.7), transparent),
+        radial-gradient(2px 2px at 700px 220px, rgba(139,92,246,0.5), transparent),
+        radial-gradient(1.5px 1.5px at 900px 140px, rgba(255,255,255,0.6), transparent);
+      background-repeat: repeat;
+      background-size: 1000px 400px;
+      opacity: 0.45;
+    }
+
+    .stars:before {
+      transform: scale(1.2);
+      opacity: 0.25;
+    }
+
+    .stars:after {
+      transform: scale(1.4);
+      opacity: 0.12;
+    }
+
+    .container {
+      width: min(1150px, 92%);
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 22px 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background:
+        radial-gradient(circle at 30% 30%, #b8f7ff, transparent 20%),
+        linear-gradient(135deg, var(--cyan), var(--purple), var(--pink));
+      box-shadow: 0 0 22px rgba(110,231,255,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .logo:before {
+      content: "S";
+      font-weight: 700;
+      font-size: 22px;
+      color: white;
+      text-shadow: 0 0 10px rgba(255,255,255,0.35);
+    }
+
+    .brand-text h1 {
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .brand-text p {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+      letter-spacing: 0.4px;
+    }
+
+    nav {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .nav-btn {
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: white;
+      text-decoration: none;
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(10px);
+    }
+
+    .hero {
+      padding: 70px 0 40px;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      padding: 8px 14px;
+      border: 1px solid rgba(110,231,255,0.2);
+      background: rgba(110,231,255,0.08);
+      color: var(--cyan);
+      border-radius: 999px;
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+
+    .hero h2 {
+      font-size: clamp(40px, 6vw, 68px);
+      line-height: 0.95;
+      letter-spacing: -2px;
+      max-width: 680px;
+    }
+
+    .hero h2 span {
+  background: linear-gradient(90deg, #fff, var(--cyan), #c084fc);
+  background-clip: text;              /* ADD THIS */
+  -webkit-background-clip: text;
+  color: transparent;                 /* ADD THIS */
+  -webkit-text-fill-color: transparent;
+}
+    .hero p {
+      margin-top: 22px;
+      max-width: 620px;
+      font-size: 18px;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .hero-actions {
+      margin-top: 28px;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 20px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      transition: 0.2s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(90deg, var(--cyan), #9f7aea);
+      color: #09101d;
+      box-shadow: var(--glow);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      backdrop-filter: blur(12px);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .hero-card {
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+      backdrop-filter: blur(18px);
+      border-radius: 28px;
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card:before {
+      content: "";
+      position: absolute;
+      inset: -30%;
+      background: radial-gradient(circle, rgba(110,231,255,0.12), transparent 35%);
+      animation: pulse 5s linear infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: translate(-10%, -10%) rotate(0deg); }
+      100% { transform: translate(10%, 10%) rotate(360deg); }
+    }
+
+    .window {
+      position: relative;
+      z-index: 1;
+      border-radius: 22px;
+      padding: 18px;
+      background: rgba(8,12,24,0.86);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .window-top {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #2f3a57;
+    }
+
+    .dot:nth-child(1) { background: #fb7185; }
+    .dot:nth-child(2) { background: #fbbf24; }
+    .dot:nth-child(3) { background: #34d399; }
+
+    .chat-bubble {
+      margin-bottom: 14px;
+      max-width: 88%;
+      padding: 14px 16px;
+      border-radius: 18px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .bot {
+      background: linear-gradient(135deg, rgba(110,231,255,0.14), rgba(139,92,246,0.12));
+      border: 1px solid rgba(110,231,255,0.14);
+    }
+
+    .user {
+      margin-left: auto;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .mini-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .mini-tags span {
+      font-size: 12px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      color: #dce7ff;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .section {
+      padding: 70px 0;
+    }
+
+    .section-title {
+      font-size: 34px;
+      margin-bottom: 12px;
+    }
+
+    .section-sub {
+      color: var(--muted);
+      max-width: 720px;
+      line-height: 1.7;
+      margin-bottom: 32px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      padding: 24px;
+      border-radius: 22px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+    }
+
+    .card-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, rgba(110,231,255,0.22), rgba(139,92,246,0.22));
+      border: 1px solid rgba(255,255,255,0.12);
+      font-size: 18px;
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+      font-size: 20px;
+    }
+
+    .card p {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .cta {
+      margin: 40px 0 80px;
+      padding: 34px;
+      border-radius: 28px;
+      background:
+        linear-gradient(135deg, rgba(110,231,255,0.12), rgba(139,92,246,0.12), rgba(217,70,239,0.10));
+      border: 1px solid rgba(255,255,255,0.12);
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .cta h3 {
+      font-size: 30px;
+      margin-bottom: 10px;
+    }
+
+    .cta p {
+      color: var(--muted);
+      max-width: 650px;
+      line-height: 1.7;
+    }
+
+    footer {
+      padding: 0 0 40px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 950px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      nav a {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars"></div>
+
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo"></div>
+        <div class="brand-text">
+          <h1>Solace AI</h1>
+          <p>Intelligent website conversations</p>
+        </div>
+      </div>
+
+      <nav>
+        <a href="#features">Features</a>
+        <a href="#how">How it works</a>
+       <a href="/index.html" class="btn btn-primary">Try the Chatbot</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div>
+        <div class="eyebrow">AI • Automation • Lead Capture</div>
+        <h2>Give your website a <span>smarter presence</span>.</h2>
+        <p>
+          Solace helps businesses guide visitors, answer questions, capture qualified leads,
+          and create a smoother customer experience with a premium AI-powered front end.
+        </p>
+
+        <div class="hero-actions">
+          <a href="/index.html" class="btn btn-primary">Launch Chat Experience</a>
+          <a href="#features" class="btn btn-secondary">Explore Features</a>
+        </div>
+      </div>
+
+      <div class="hero-card">
+        <div class="window">
+          <div class="window-top">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+          </div>
+
+          <div class="chat-bubble bot">
+            Welcome — I’m Solace. I’m here to help with pricing, answer questions, and connect you with our team.
+          </div>
+
+          <div class="chat-bubble user">
+            We want something that feels premium and captures more leads.
+          </div>
+
+          <div class="chat-bubble bot">
+            Absolutely. I can guide visitors, qualify inquiries, and help your team step into conversations with the right context.
+          </div>
+
+          <div class="mini-tags">
+            <span>Lead Capture</span>
+            <span>Website Assistant</span>
+            <span>Automation</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="features">
+      <h2 class="section-title">Built for modern business websites</h2>
+      <p class="section-sub">
+        Solace is designed to feel polished, intelligent, and useful from the first interaction.
+        It helps visitors get where they need to go faster while giving your team better incoming leads.
+      </p>
+
+      <div class="grid">
+        <div class="card">
+          <div class="card-icon">✦</div>
+          <h3>Premium first impression</h3>
+          <p>
+            Create a more refined, responsive experience for visitors with a conversational layer that feels modern and intentional.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">☄</div>
+          <h3>Smarter lead capture</h3>
+          <p>
+            Turn casual website visits into qualified opportunities by guiding people through clear, structured conversations.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">◉</div>
+          <h3>Team-ready handoff</h3>
+          <p>
+            Collect useful context before the handoff so your team already knows what the visitor needs before reaching out.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="how">
+      <h2 class="section-title">How Solace fits into your site</h2>
+      <p class="section-sub">
+        It lives on your website as an intelligent assistant that can answer common questions,
+        direct visitors, collect contact information, and support your sales or service workflow.
+      </p>
+
+      <div class="grid">
+        <div class="card">
+          <div class="card-icon">1</div>
+          <h3>Engage</h3>
+          <p>
+            Visitors get immediate help instead of searching through pages or waiting for someone to respond.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">2</div>
+          <h3>Guide</h3>
+          <p>
+            Solace can move people toward pricing, support, sales, or the exact information they need.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">3</div>
+          <h3>Convert</h3>
+          <p>
+            Qualified contact details and conversation context can be passed to your team for faster follow-up.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="cta">
+      <div>
+        <h3>Make your website feel more alive.</h3>
+        <p>
+          Solace brings together design, conversation, and automation in one front-facing experience built to support growth.
+        </p>
+      </div>
+
+      <a href="/index.html" class="btn btn-primary">Try the Chatbot</a>
+    </div>
+
+    <footer>
+      © 2026 Solace AI
+    </footer>
+  </div>
+</body>
+</html>
